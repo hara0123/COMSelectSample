@@ -2,11 +2,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
     SerialPortListup serialPortListup_;
     int selectedIndex_;
+
+    int buttonYStep_;
+    int buttonXOffset_;
 
     public GameObject buttonPrefab_;
     public Transform canvasTransform_;
@@ -18,15 +22,19 @@ public class UIManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        buttonYStep_ = 92;
+        buttonXOffset_ = 240;
+
         serialPortListup_ = GetComponent<SerialPortListup>();
         for (int i = 0; i < serialPortListup_.portNum; i++)
         {
             GameObject buttonObj = Instantiate(buttonPrefab_, canvasTransform_);
             // 位置をずらして配置
-            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -100 * i);
+            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -buttonYStep_ * i);
 
             if (i == 0)
             {
+                EventSystem.current.SetSelectedGameObject(buttonObj);
                 USBImagePrefab_ = Instantiate(USBImagePrefab_, canvasTransform_);
                 USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = buttonObj.GetComponent<RectTransform>().anchoredPosition + new Vector2(-150, 0);
             }
@@ -35,7 +43,7 @@ public class UIManager : MonoBehaviour
             Button buttonComp = buttonObj.GetComponent<Button>();
             TextMeshProUGUI label = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
             label.text = serialPortListup_.portName[i]; // ボタンの文字
-            label.color = Color.white; // ボタンの文字の色
+            label.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF); // ボタンの文字の色
             label.font = japaneseFont_; // ボタンの文字のフォント
 
             int index = i;
@@ -44,13 +52,13 @@ public class UIManager : MonoBehaviour
 
         GameObject exitButtonObj = Instantiate(buttonPrefab_, canvasTransform_);
 
-        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -500);
+        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -buttonYStep_ * serialPortListup_.portNum);
 
         // ボタンのテキストを変更
         Button exitButtonComp = exitButtonObj.GetComponent<Button>();
         TextMeshProUGUI exitLabel = exitButtonObj.GetComponentInChildren<TextMeshProUGUI>();
         exitLabel.text = "終了"; // ボタンの文字
-        exitLabel.color = Color.white; // ボタンの文字の色
+        exitLabel.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF); // ボタンの文字の色
         exitLabel.font = japaneseFont_; // ボタンの文字のフォント
 
         exitButtonComp.onClick.AddListener(() => OnButtonClicked(serialPortListup_.portNum));
@@ -86,7 +94,7 @@ public class UIManager : MonoBehaviour
 
         if (signalChangeDetector_.IsChanged())
         {
-            USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = new Vector2(-150, -100 * selectedIndex_);
+            USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = new Vector2(-buttonXOffset_, -buttonYStep_ * selectedIndex_);
         }
 
         signalChangeDetector_.Update();
@@ -94,22 +102,31 @@ public class UIManager : MonoBehaviour
 
     void OnButtonClicked(int buttonIndex)
     {
-        switch (buttonIndex)
+        Debug.Log("index: " + buttonIndex.ToString() + ", selected: " + selectedIndex_.ToString());
+        if (buttonIndex != selectedIndex_)
         {
-            case 0:
-                Debug.Log("index 0");
-                break;
-            case 1:
-                Debug.Log("index 1");
-                break;
-            case 2:
-                // exit
+            selectedIndex_ = buttonIndex;
+            signalChangeDetector_.Input(selectedIndex_);
+
+            if (signalChangeDetector_.IsChanged())
+            {
+                USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = new Vector2(-buttonXOffset_, -buttonYStep_ * selectedIndex_);
+            }
+
+            signalChangeDetector_.Update();
+        }
+
+        if (buttonIndex == serialPortListup_.portNum)
+        {
 #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.isPlaying = false;
 #else
-                Application.Quit();
+            Application.Quit();
 #endif
-                break;
+        }
+        else
+        {
+            Debug.Log("button: " + buttonIndex.ToString());
         }
     }
 }
