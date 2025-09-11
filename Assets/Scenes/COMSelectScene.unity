@@ -152,6 +152,7 @@ MonoBehaviour:
   buttonPrefab_: {fileID: 987065467069817671, guid: 7ecd885fd384c6f498e935db980e0899, type: 3}
   canvasTransform_: {fileID: 730365547}
   japaneseFont_: {fileID: 11400000, guid: 3a7b762ce14cfaa4586a7dcf5137c23a, type: 2}
+  USBImagePrefab_: {fileID: 4204088671143618194, guid: 4e6244997893bca479106e6d013076c8, type: 3}
 --- !u!114 &54452186
 MonoBehaviour:
   m_ObjectHideFlags: 0
