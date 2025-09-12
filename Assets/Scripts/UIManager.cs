@@ -32,13 +32,6 @@ public class UIManager : MonoBehaviour
             // 位置をずらして配置
             buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -buttonYStep_ * i);
 
-            if (i == 0)
-            {
-                EventSystem.current.SetSelectedGameObject(buttonObj);
-                USBImagePrefab_ = Instantiate(USBImagePrefab_, canvasTransform_);
-                USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = buttonObj.GetComponent<RectTransform>().anchoredPosition + new Vector2(-150, 0);
-            }
-
             // ボタンのテキストを変更
             Button buttonComp = buttonObj.GetComponent<Button>();
             TextMeshProUGUI label = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
@@ -48,6 +41,14 @@ public class UIManager : MonoBehaviour
 
             int index = i;
             buttonComp.onClick.AddListener(() => OnButtonClicked(index)); // iを直接渡すと全てのボタンに最後の値が渡る。クロージャ問題。
+
+            if (i == 0)
+            {
+                selectedIndex_ = 0;
+                EventSystem.current.SetSelectedGameObject(buttonObj);
+                USBImagePrefab_ = Instantiate(USBImagePrefab_, canvasTransform_);
+                USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = buttonObj.GetComponent<RectTransform>().anchoredPosition + new Vector2(-150, 0);
+            }
         }
 
         GameObject exitButtonObj = Instantiate(buttonPrefab_, canvasTransform_);
@@ -57,13 +58,12 @@ public class UIManager : MonoBehaviour
         // ボタンのテキストを変更
         Button exitButtonComp = exitButtonObj.GetComponent<Button>();
         TextMeshProUGUI exitLabel = exitButtonObj.GetComponentInChildren<TextMeshProUGUI>();
-        exitLabel.text = "終了"; // ボタンの文字
-        exitLabel.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF); // ボタンの文字の色
-        exitLabel.font = japaneseFont_; // ボタンの文字のフォント
+        exitLabel.text = "終了";
+        exitLabel.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF);
+        exitLabel.font = japaneseFont_;
 
         exitButtonComp.onClick.AddListener(() => OnButtonClicked(serialPortListup_.portNum));
 
-        selectedIndex_ = 0;
         signalChangeDetector_ = new SignalChangeDetector(selectedIndex_);
     }
 
