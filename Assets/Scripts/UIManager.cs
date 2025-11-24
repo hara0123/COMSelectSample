@@ -20,16 +20,21 @@ public class UIManager : MonoBehaviour
 
     SignalChangeDetector signalChangeDetector_;
 
+    bool isReady_ = false;
+
     private void Awake()
     {
         buttonYStep_ = 92;
         buttonXOffset_ = 240;
+
+        serialPortListup_ = GetComponent<SerialPortListup>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private System.Collections.IEnumerator Start()
     {
-        serialPortListup_ = GetComponent<SerialPortListup>();
+        yield return new WaitUntil(() => serialPortListup_ != null && serialPortListup_.isCompleted);
+
         for (int i = 0; i < serialPortListup_.portNum; i++)
         {
             GameObject buttonObj = Instantiate(buttonPrefab_, canvasTransform_);
@@ -77,11 +82,16 @@ public class UIManager : MonoBehaviour
         exitButtonComp.onClick.AddListener(() => OnButtonClicked(serialPortListup_.portNum));
 
         signalChangeDetector_ = new SignalChangeDetector(selectedIndex_);
+
+        isReady_ = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!isReady_)
+            return;
+
         var current = Keyboard.current;
 
         if (current.upArrowKey.wasPressedThisFrame)

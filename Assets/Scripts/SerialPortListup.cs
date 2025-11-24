@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Ports;
@@ -7,12 +8,14 @@ using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static UnityEditor.LightingExplorerTableColumn;
+//using static UnityEditor.LightingExplorerTableColumn;
 
 public class SerialPortListup : MonoBehaviour
 {
     public int portNum { get; private set; }
     public string[] portName { get; private set; }
+
+    public bool isCompleted { get; private set; }
 
     Process process_;
     static readonly string FolderPath = Application.streamingAssetsPath + "/Apps";
@@ -35,11 +38,19 @@ public class SerialPortListup : MonoBehaviour
 
     private void Awake()
     {
-        ExistingCOMPort_ = -1;
+        ExistingCOMPort_ = 0;
         COMPortName_ = new List<string>();
         COMPortDetail_ = new List<string>();
 
         process_ = new Process();
+
+        //if (!File.Exists(FilePath))
+        //{
+        //    UnityEngine.Debug.LogError("SerialPortName.exeが見つかりません: " + FilePath);
+        //    // ここで IsCompleted を true にしておくと、少なくともUIは出せる
+        //    isCompleted = true;
+        //    return;
+        //}
 
         // プロセスを起動するときに使用する値のセットを指定
         process_.StartInfo = new ProcessStartInfo
@@ -50,8 +61,8 @@ public class SerialPortListup : MonoBehaviour
             RedirectStandardInput = true,               // StandardInput から入力を読み取る(既定値：false)
             RedirectStandardOutput = true,              // 出力を StandardOutput に書き込むかどうか(既定値：false)
             CreateNoWindow = true,                      // プロセス用の新しいウィンドウを作成せずにプロセスを起動するかどうか(既定値：false)
-            //StandardOutputEncoding = Encoding.UTF8,
-            StandardOutputEncoding = Encoding.GetEncoding("shift-jis"),
+            StandardOutputEncoding = Encoding.UTF8,
+            //StandardOutputEncoding = Encoding.GetEncoding("shift-jis"),
         };
 
         // 外部プロセスのStandardOutput ストリームに行を書き込む度に発火されるイベント
@@ -68,21 +79,19 @@ public class SerialPortListup : MonoBehaviour
 
     void OnStandardOut(object sender, DataReceivedEventArgs e)
     {
-        if (ExistingCOMPort_ == -1)
+        // プロセス終了時などで null が来ることがあるので防御
+        if (string.IsNullOrEmpty(e.Data))
+            return;
+
+        // 必ずCOMポート名→COM詳細の順でセットで表示される
+        if (e.Data[0] == 'N')
         {
-            int.TryParse(e.Data, out ExistingCOMPort_);
-            portNum = ExistingCOMPort_;
+            COMPortName_.Add(e.Data.Substring(1)); // 先頭1文字（'N'）を削除
+            ExistingCOMPort_++;
         }
-        else
+        else if (e.Data[0] == 'D')
         {
-            if (e.Data[0] == 'N')
-            {
-                COMPortName_.Add(e.Data.Substring(1)); // 先頭1文字（'N'）を削除
-            }
-            else if (e.Data[0] == 'D')
-            {
-                COMPortDetail_.Add(e.Data.Substring(1)); // 先頭1文字（'D'）を削除
-            }
+            COMPortDetail_.Add(e.Data.Substring(1)); // 先頭1文字（'D'）を削除
         }
     }
 
@@ -91,12 +100,29 @@ public class SerialPortListup : MonoBehaviour
 
     void DisposeProcess()
     {
-        if (process_ == null || process_.HasExited) return;
+        if (process_ == null)
+            return;
 
-        process_.StandardInput.Close();
-        process_.CloseMainWindow();
+        try
+        {
+            // ExitedイベントのときにはすでにHasExited == true
+            if (!process_.HasExited)
+            {
+                process_.StandardInput.Close();
+                process_.CloseMainWindow();
+            }
+        }
+        catch (Exception)
+        {
+            // 終了タイミングによっては例外になるので握りつぶす
+        }
+
         process_.Dispose();
         process_ = null;
+
+        portNum = ExistingCOMPort_;
+
+        isCompleted = true;
     }
 
 }
