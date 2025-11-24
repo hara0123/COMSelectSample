@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
-using System.Diagnostics;
 using System.Text;
-using System;
-using static UnityEditor.LightingExplorerTableColumn;
 using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Rendering;
+using static UnityEditor.LightingExplorerTableColumn;
 
 public class SerialPortListup : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class SerialPortListup : MonoBehaviour
     Process process_;
     static readonly string FolderPath = Application.streamingAssetsPath + "/Apps";
     static readonly string FilePath = FolderPath + "/SerialPortName.exe";
+
+    int ExistingCOMPort_;
+    List<string> COMPortName_;
+    List<string> COMPortDetail_;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,6 +37,10 @@ public class SerialPortListup : MonoBehaviour
     {
         portName = SerialPort.GetPortNames();
         portNum = portName.Length;
+
+        ExistingCOMPort_ = -1;
+        COMPortName_ = new List<string>();
+        COMPortDetail_ = new List<string>();
 
         process_ = new Process();
 
@@ -58,13 +67,23 @@ public class SerialPortListup : MonoBehaviour
         // プロセスを起動する
         process_.Start();
         process_.BeginOutputReadLine();
-
-        UnityEngine.Debug.Log("fire.");
-
     }
 
     void OnStandardOut(object sender, DataReceivedEventArgs e)
     {
+        if (ExistingCOMPort_ == -1)
+        {
+            int.TryParse(e.Data, out ExistingCOMPort_);
+        }
+        else
+        {
+            //if
+        }
+
+            COMPortName_.Add(e.Data);
+
+
+
         //DataType type = CheckDataType(e.Data);
 
         //switch (type)
@@ -90,6 +109,8 @@ public class SerialPortListup : MonoBehaviour
         //        break;
         //}
         UnityEngine.Debug.Log(e.Data);
+
+
     }
 
 

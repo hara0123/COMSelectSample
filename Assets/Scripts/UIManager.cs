@@ -19,12 +19,15 @@ public class UIManager : MonoBehaviour
 
     SignalChangeDetector signalChangeDetector_;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
         buttonYStep_ = 92;
         buttonXOffset_ = 240;
+    }
 
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
         serialPortListup_ = GetComponent<SerialPortListup>();
         for (int i = 0; i < serialPortListup_.portNum; i++)
         {
