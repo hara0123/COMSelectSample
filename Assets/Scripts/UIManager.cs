@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     public Transform canvasTransform_;
     public TMP_FontAsset japaneseFont_;
     public GameObject USBImagePrefab_;
+    public GameObject descriptionPrefab_;
 
     SignalChangeDetector signalChangeDetector_;
 
@@ -38,9 +39,17 @@ public class UIManager : MonoBehaviour
             // ボタンのテキストを変更
             Button buttonComp = buttonObj.GetComponent<Button>();
             TextMeshProUGUI label = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
-            label.text = serialPortListup_.portName[i]; // ボタンの文字
+            label.text = serialPortListup_.COMPortName_[i];
             label.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF); // ボタンの文字の色
             label.font = japaneseFont_; // ボタンの文字のフォント
+
+            GameObject descriptionObj = Instantiate(descriptionPrefab_, canvasTransform_);
+            descriptionObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(300, -buttonYStep_ * i);
+
+            TextMeshProUGUI descriptionLabel = descriptionObj.GetComponentInChildren<TextMeshProUGUI>();
+            descriptionLabel.text = serialPortListup_.COMPortDetail_[i];
+            descriptionLabel.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF);
+            descriptionLabel.font = japaneseFont_;
 
             int index = i;
             buttonComp.onClick.AddListener(() => OnButtonClicked(index)); // iを直接渡すと全てのボタンに最後の値が渡る。クロージャ問題。

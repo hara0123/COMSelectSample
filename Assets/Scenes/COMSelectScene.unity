@@ -153,6 +153,7 @@ MonoBehaviour:
   canvasTransform_: {fileID: 730365547}
   japaneseFont_: {fileID: 11400000, guid: 3a7b762ce14cfaa4586a7dcf5137c23a, type: 2}
   USBImagePrefab_: {fileID: 4204088671143618194, guid: 4e6244997893bca479106e6d013076c8, type: 3}
+  descriptionPrefab_: {fileID: 2197402962273190720, guid: 05358825c93fbce459061cde3417ffcb, type: 3}
 --- !u!114 &54452186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,6 +166,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8b912db17f65464ca70c0546d372ab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  COMPortName_: []
+  COMPortDetail_: []
 --- !u!4 &54452187
 Transform:
   m_ObjectHideFlags: 0

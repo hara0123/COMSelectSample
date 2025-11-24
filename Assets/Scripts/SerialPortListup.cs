@@ -19,8 +19,8 @@ public class SerialPortListup : MonoBehaviour
     static readonly string FilePath = FolderPath + "/SerialPortName.exe";
 
     int ExistingCOMPort_;
-    List<string> COMPortName_;
-    List<string> COMPortDetail_;
+    public List<string> COMPortName_;
+    public List<string> COMPortDetail_;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,9 +35,6 @@ public class SerialPortListup : MonoBehaviour
 
     private void Awake()
     {
-        portName = SerialPort.GetPortNames();
-        portNum = portName.Length;
-
         ExistingCOMPort_ = -1;
         COMPortName_ = new List<string>();
         COMPortDetail_ = new List<string>();
@@ -74,45 +71,20 @@ public class SerialPortListup : MonoBehaviour
         if (ExistingCOMPort_ == -1)
         {
             int.TryParse(e.Data, out ExistingCOMPort_);
+            portNum = ExistingCOMPort_;
         }
         else
         {
-            //if
+            if (e.Data[0] == 'N')
+            {
+                COMPortName_.Add(e.Data.Substring(1)); // 先頭1文字（'N'）を削除
+            }
+            else if (e.Data[0] == 'D')
+            {
+                COMPortDetail_.Add(e.Data.Substring(1)); // 先頭1文字（'D'）を削除
+            }
         }
-
-            COMPortName_.Add(e.Data);
-
-
-
-        //DataType type = CheckDataType(e.Data);
-
-        //switch (type)
-        //{
-        //    case DataType.Number:
-        //        UnityEngine.Debug.Log("aaaa");
-        //        break;
-        //    case DataType.Name:
-        //        string temp2 = "あいう";
-        //        //portList.Add(e.Data);
-        //        portList.Add(temp2);
-        //        UnityEngine.Debug.Log("bbbb");
-        //        break;
-        //    case DataType.Detail:
-        //        //detailList.Add(e.Data);
-        //        string temp = "えおか";
-
-        //        detailList.Add(temp);
-        //        UnityEngine.Debug.Log("cccc");
-        //        break;
-        //    default:
-        //        UnityEngine.Debug.Log("oooo");
-        //        break;
-        //}
-        UnityEngine.Debug.Log(e.Data);
-
-
     }
-
 
     void DisposeProcess(object sender, EventArgs e)
     => DisposeProcess();
