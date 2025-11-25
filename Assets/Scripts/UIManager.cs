@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -39,7 +40,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject buttonObj = Instantiate(buttonPrefab_, canvasTransform_);
             // 位置をずらして配置
-            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -buttonYStep_ * i);
+            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -buttonYStep_ * i);
 
             // ボタンのテキストを変更
             Button buttonComp = buttonObj.GetComponent<Button>();
@@ -49,7 +50,7 @@ public class UIManager : MonoBehaviour
             label.font = japaneseFont_; // ボタンの文字のフォント
 
             GameObject descriptionObj = Instantiate(descriptionPrefab_, canvasTransform_);
-            descriptionObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(300, -buttonYStep_ * i);
+            descriptionObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(280, -buttonYStep_ * i - 15);
 
             TextMeshProUGUI descriptionLabel = descriptionObj.GetComponentInChildren<TextMeshProUGUI>();
             descriptionLabel.text = serialPortListup_.COMPortDetail_[i];
@@ -70,7 +71,7 @@ public class UIManager : MonoBehaviour
 
         GameObject exitButtonObj = Instantiate(buttonPrefab_, canvasTransform_);
 
-        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -buttonYStep_ * serialPortListup_.portNum);
+        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -buttonYStep_ * serialPortListup_.portNum);
 
         // ボタンのテキストを変更
         Button exitButtonComp = exitButtonObj.GetComponent<Button>();
@@ -124,7 +125,6 @@ public class UIManager : MonoBehaviour
 
     void OnButtonClicked(int buttonIndex)
     {
-        Debug.Log("index: " + buttonIndex.ToString() + ", selected: " + selectedIndex_.ToString());
         if (buttonIndex != selectedIndex_)
         {
             selectedIndex_ = buttonIndex;
@@ -148,7 +148,14 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("button: " + buttonIndex.ToString());
+            //Debug.Log("button: " + buttonIndex.ToString());
+            //Debug.Log("selected: " + serialPortListup_.COMPortName_[selectedIndex_]);
+            PassCOMPort.selectedCOMPortName = serialPortListup_.COMPortName_[selectedIndex_];
+            PassCOMPort.selectedCOMPortDetail = serialPortListup_.COMPortDetail_[selectedIndex_];
+
+            // ここでシーンを呼ぶ
+            // 例えば以下
+            //SceneManager.LoadScene("SampleScene");
         }
     }
 }
