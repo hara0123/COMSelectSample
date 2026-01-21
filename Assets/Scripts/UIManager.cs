@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
 
     int buttonYStep_;
     int buttonXOffset_;
+    int buttonYOffset_;
 
     public GameObject buttonPrefab_;
     public Transform canvasTransform_;
@@ -21,12 +22,15 @@ public class UIManager : MonoBehaviour
 
     SignalChangeDetector signalChangeDetector_;
 
+    [SerializeField] TextMeshProUGUI informationText_;
+
     bool isReady_ = false;
 
     private void Awake()
     {
         buttonYStep_ = 92;
         buttonXOffset_ = 240;
+        buttonYOffset_ = 200;
 
         serialPortListup_ = GetComponent<SerialPortListup>();
     }
@@ -40,7 +44,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject buttonObj = Instantiate(buttonPrefab_, canvasTransform_);
             // 位置をずらして配置
-            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -buttonYStep_ * i);
+            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, buttonYOffset_ + -buttonYStep_ * i);
 
             // ボタンのテキストを変更
             Button buttonComp = buttonObj.GetComponent<Button>();
@@ -49,8 +53,9 @@ public class UIManager : MonoBehaviour
             label.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF); // ボタンの文字の色
             label.font = japaneseFont_; // ボタンの文字のフォント
 
+            // 詳細情報の描画
             GameObject descriptionObj = Instantiate(descriptionPrefab_, canvasTransform_);
-            descriptionObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(280, -buttonYStep_ * i - 15);
+            descriptionObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(280, buttonYOffset_ + -buttonYStep_ * i - 15);
 
             TextMeshProUGUI descriptionLabel = descriptionObj.GetComponentInChildren<TextMeshProUGUI>();
             descriptionLabel.text = serialPortListup_.COMPortDetail_[i];
