@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
 
     int buttonYStep_;
     int buttonXOffset_;
-    int buttonYOffset_;
+    int buttonYOrigin_;
 
     public GameObject buttonPrefab_;
     public Transform canvasTransform_;
@@ -23,14 +23,16 @@ public class UIManager : MonoBehaviour
     SignalChangeDetector signalChangeDetector_;
 
     [SerializeField] TextMeshProUGUI informationText_;
+    [SerializeField] string informationMessage_;
 
     bool isReady_ = false;
 
     private void Awake()
     {
-        buttonYStep_ = 92;
+        // 画面は1280x720（x:-640～640、y:-360～360）
+        buttonYStep_ = 92; // 次のボタンまでの下方向のずれ
         buttonXOffset_ = 240;
-        buttonYOffset_ = 200;
+        buttonYOrigin_ = 200;
 
         serialPortListup_ = GetComponent<SerialPortListup>();
     }
@@ -40,26 +42,27 @@ public class UIManager : MonoBehaviour
     {
         yield return new WaitUntil(() => serialPortListup_ != null && serialPortListup_.isCompleted);
 
+        // COMポートのボタン
         for (int i = 0; i < serialPortListup_.portNum; i++)
         {
             GameObject buttonObj = Instantiate(buttonPrefab_, canvasTransform_);
-            // 位置をずらして配置
-            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, buttonYOffset_ + -buttonYStep_ * i);
+            buttonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, buttonYOrigin_ + -buttonYStep_ * i);
+            Debug.Log(buttonYOrigin_ + -buttonYStep_ * i);
 
             // ボタンのテキストを変更
             Button buttonComp = buttonObj.GetComponent<Button>();
             TextMeshProUGUI label = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
             label.text = serialPortListup_.COMPortName_[i];
             label.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF); // ボタンの文字の色
-            label.font = japaneseFont_; // ボタンの文字のフォント
+            label.font = japaneseFont_;
 
             // 詳細情報の描画
             GameObject descriptionObj = Instantiate(descriptionPrefab_, canvasTransform_);
-            descriptionObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(280, buttonYOffset_ + -buttonYStep_ * i - 15);
+            descriptionObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(280, buttonYOrigin_ + -buttonYStep_ * i - 15);
 
             TextMeshProUGUI descriptionLabel = descriptionObj.GetComponentInChildren<TextMeshProUGUI>();
             descriptionLabel.text = serialPortListup_.COMPortDetail_[i];
-            descriptionLabel.color = new Color32(0xFD, 0xFD, 0xFD, 0xFF);
+            descriptionLabel.color = new Color32(0x00, 0x00, 0x3F, 0xFF); // 詳細情報の文字の色
             descriptionLabel.font = japaneseFont_;
 
             int index = i;
@@ -74,11 +77,11 @@ public class UIManager : MonoBehaviour
             }
         }
 
+        // 終了ボタンは別に実装
         GameObject exitButtonObj = Instantiate(buttonPrefab_, canvasTransform_);
+        //exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -buttonYStep_ * serialPortListup_.portNum);
+        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -360);
 
-        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -buttonYStep_ * serialPortListup_.portNum);
-
-        // ボタンのテキストを変更
         Button exitButtonComp = exitButtonObj.GetComponent<Button>();
         TextMeshProUGUI exitLabel = exitButtonObj.GetComponentInChildren<TextMeshProUGUI>();
         exitLabel.text = "終了";
@@ -97,6 +100,8 @@ public class UIManager : MonoBehaviour
     {
         if (!isReady_)
             return;
+
+        informationText_.text = informationMessage_;
 
         var current = Keyboard.current;
 
