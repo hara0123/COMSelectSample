@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
 {
     SerialPortListup serialPortListup_;
     int selectedIndex_;
+    int currentPage_;
 
     int buttonYStep_;
     int buttonXOffset_;
@@ -34,6 +35,7 @@ public class UIManager : MonoBehaviour
         buttonXOffset_ = 240;
         buttonYOrigin_ = 200;
 
+        currentPage_ = 0;
         serialPortListup_ = GetComponent<SerialPortListup>();
     }
 
@@ -68,6 +70,7 @@ public class UIManager : MonoBehaviour
             int index = i;
             buttonComp.onClick.AddListener(() => OnButtonClicked(index)); // iを直接渡すと全てのボタンに最後の値が渡る。クロージャ問題。
 
+            // 最初のCOMポートにフォーカス
             if (i == 0)
             {
                 selectedIndex_ = 0;
@@ -105,10 +108,20 @@ public class UIManager : MonoBehaviour
 
         var current = Keyboard.current;
 
+        // 上下カーソルでCOMポート選択
         if (current.upArrowKey.wasPressedThisFrame)
             selectedIndex_--;
         if (current.downArrowKey.wasPressedThisFrame)
             selectedIndex_++;
+
+        // 左右カーソルでCOM一覧のページ選択
+        // COMポートが5以上のときのみ有効
+        if (current.rightArrowKey.wasPressedThisFrame)
+            currentPage_++;
+        if (current.leftArrowKey.wasPressedThisFrame)
+            currentPage_--;
+
+        // COMポート選択
         if (current.enterKey.wasPressedThisFrame)
         {
             OnButtonClicked(selectedIndex_);
@@ -127,7 +140,7 @@ public class UIManager : MonoBehaviour
 
         if (signalChangeDetector_.IsChanged())
         {
-            USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = new Vector2(-buttonXOffset_, -buttonYStep_ * selectedIndex_);
+            USBImagePrefab_.GetComponent<RectTransform>().anchoredPosition = new Vector2(-buttonXOffset_, buttonYOrigin_ + -buttonYStep_ * selectedIndex_);
         }
 
         signalChangeDetector_.Update();
