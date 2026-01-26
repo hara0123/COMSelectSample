@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI informationText_;
     [SerializeField] string informationMessage_;
+    [SerializeField] string nextSceneName_ = "";
 
     bool isReady_ = false;
 
@@ -177,8 +178,10 @@ public class UIManager : MonoBehaviour
             PassCOMPort.selectedCOMPortDetail = serialPortListup_.COMPortDetail_[selectedIndex_];
 
             // Ç±Ç±Ç≈ÉVÅ[ÉìÇåƒÇ‘
-            // ó·Ç¶ÇŒà»â∫
-            //SceneManager.LoadScene("SampleScene");
+            if(nextSceneName_ != "")
+            {
+                SceneManager.LoadScene(nextSceneName_);
+            }
         }
     }
 }

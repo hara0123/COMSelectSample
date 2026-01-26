@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/COMSelectScene.unity
     guid: ba4dcfb8225c9314f8cd79e80358ed53
+  - enabled: 1
+    path: Assets/Scenes/DummyTitleScene.unity
+    guid: 730b2c4a90fa08c478b37c0bb525af18
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
