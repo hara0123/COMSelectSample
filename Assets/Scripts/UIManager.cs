@@ -82,8 +82,8 @@ public class UIManager : MonoBehaviour
 
         // èIóπÉ{É^ÉìÇÕï Ç…é¿ëï
         GameObject exitButtonObj = Instantiate(buttonPrefab_, canvasTransform_);
-        //exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -buttonYStep_ * serialPortListup_.portNum);
-        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -360);
+        exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, buttonYOrigin_ + -buttonYStep_ * serialPortListup_.portNum);
+        //exitButtonObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50, -360);
 
         Button exitButtonComp = exitButtonObj.GetComponent<Button>();
         TextMeshProUGUI exitLabel = exitButtonObj.GetComponentInChildren<TextMeshProUGUI>();

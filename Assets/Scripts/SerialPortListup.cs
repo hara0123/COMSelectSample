@@ -25,6 +25,8 @@ public class SerialPortListup : MonoBehaviour
     public List<string> COMPortName_;
     public List<string> COMPortDetail_;
 
+    [SerializeField] string debugString_ = ""; // 空文字列の場合はCOMポートをリストアップ、"test"の場合は10個のダミーが並ぶ
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -56,7 +58,7 @@ public class SerialPortListup : MonoBehaviour
         process_.StartInfo = new ProcessStartInfo
         {
             FileName = FilePath,                        // 起動するファイルのパスを指定する
-            Arguments = "test",
+            Arguments = debugString_,
             UseShellExecute = false,                    // プロセスの起動にオペレーティング システムのシェルを使用するかどうか(既定値:true)
             WorkingDirectory = FolderPath,              // 開始するプロセスの作業ディレクトリを取得または設定する(既定値:"")
             RedirectStandardInput = true,               // StandardInput から入力を読み取る(既定値：false)

@@ -170,6 +170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   COMPortName_: []
   COMPortDetail_: []
+  debugString_: 
 --- !u!4 &54452187
 Transform:
   m_ObjectHideFlags: 0
